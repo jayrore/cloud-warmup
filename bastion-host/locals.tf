@@ -1,0 +1,3 @@
+locals {
+  agCapacity = "1"
+}
