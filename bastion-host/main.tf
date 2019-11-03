@@ -12,7 +12,7 @@ resource "aws_security_group" "bastion_ssh" {
     # Please restrict your ingress to only necessary IPs and ports.
     # Opening to 0.0.0.0/0 can lead to security vulnerabilities.
     # $(curl -s http://checkip.amazonaws.com)
-    cidr_blocks = ["0.0.0.0/0"] # add a CIDR block here
+    cidr_blocks = ["189.238.35.122/32"] # add a CIDR block here
   }
 
   egress {
@@ -22,7 +22,6 @@ resource "aws_security_group" "bastion_ssh" {
     cidr_blocks     = ["0.0.0.0/0"]
   }
 }
-
 
 data "template_cloudinit_config" "user_data" {
   gzip          = false
@@ -45,7 +44,7 @@ resource "aws_launch_template" "bastion" {
   name_prefix                          = "bastion-"
   image_id                             = "ami-0a313d6098716f372"
   instance_type                        = "t2.micro"
-  key_name                             = "bastion"
+  key_name                             = "${aws_key_pair.bastion.key_name}"
   user_data                            = "${data.template_cloudinit_config.user_data.rendered}"
   instance_initiated_shutdown_behavior = "terminate"
   ebs_optimized                        = false
