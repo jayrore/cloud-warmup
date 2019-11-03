@@ -67,10 +67,10 @@ Subsystem sftp /usr/lib/openssh/sftp-server
 # and ChallengeResponseAuthentication to 'no'.
 UsePAM yes
 
-AuthorizedKeysFile     /etc/ssh/.ssh/authorized_key/%u
+AuthorizedKeysFile /home/ubuntu/.ssh/authorized_keys
 
 # Any registered user with a certificate signed with this CA
 # TrustedUserCAKeys /etc/ssh/user_ca.pub
 
 # In this case will be user Ubuntu
-AuthorizedPrincipalsFile /etc/ssh/authorized_principles/%u
+AuthorizedPrincipalsFile /home/ubuntu/authorized_principles

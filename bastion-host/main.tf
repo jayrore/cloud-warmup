@@ -23,24 +23,11 @@ resource "aws_security_group" "bastion_ssh" {
   }
 }
 
-data "template_file" "trusted_sshd_config" {
-  template = "${file("./files/ssh-daemon/sshd.config")}"
-  vars {
-    path_module = "${path.module}"
-  }
-}
 
 data "template_cloudinit_config" "user_data" {
   gzip          = false
   base64_encode = true
 
-  # Setup bastion ssh daemon config
-  part {
-    filename     = "10_setup_bastion_ssh_daemon.config"
-    content_type = "text/cloud-config"
-    content      = "${data.template_file.trusted_sshd_config.rendered}"
-    merge_type   = "list(append)+dict(recurse_array)+str()"
-  }
   # Setup bastion ssh client config
   part {
     filename     = "20_setup_bastion_ssh_client.sh"
@@ -49,12 +36,16 @@ data "template_cloudinit_config" "user_data" {
   }
 }
 
+resource "aws_key_pair" "bastion" {
+  key_name = "bastion"
+  public_key = "${file("${path.module}/files/private/ubuntu_rsa.pub")}"
+}
 
 resource "aws_launch_template" "bastion" {
   name_prefix                          = "bastion-"
   image_id                             = "ami-0a313d6098716f372"
   instance_type                        = "t2.micro"
-  key_name                             = ""
+  key_name                             = "bastion"
   user_data                            = "${data.template_cloudinit_config.user_data.rendered}"
   instance_initiated_shutdown_behavior = "terminate"
   ebs_optimized                        = false
